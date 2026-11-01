@@ -98,5 +98,17 @@ under 10 GB (free storage). If a clip takes > 3 min, lower `data.n_target` rathe
   544 exact zeros; 63 % empty titles. No NAWP, no durations, val/test unlabeled.
 * Licences: TRIBE v2 code+weights CC-BY-NC-4.0 (research only). SnapUGC: no stated licence; treat as research only.
 
-## Status
-See `results/summary.md` (written by step 5) and the project log at the bottom of this file.
+## Status (2026-11-01)
+
+| Step | State |
+|---|---|
+| 01 subset | **Done.** 200 clips downloaded (548 live of 1,728 link attempts), bins 126/50/24, see `results/manifest.csv` |
+| 00 smoke test | **Not run** (needs the L4 Studio). Verifies shapes, timing and the embedding-cache read |
+| 02 TRIBE extraction | **Not run** (GPU) |
+| 03–05 features / experiments / report | **Code verified** on fabricated TRIBE outputs (`dev_make_synthetic.py`); real run pending |
+| tests | 10 passing |
+
+Real results will appear in `results/summary.md` and `results/learning_curve.png` once step 5 runs on real
+extractions. Anything under `results/_synthetic/` is a pipeline test, not a finding.
+
+For agents: read `CLAUDE.md` first (purpose, decisions, gotchas, next steps).
