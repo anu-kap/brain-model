@@ -52,6 +52,27 @@ results/                       committed outputs (tables, plot, summary.md)
 data/                          gitignored caches (videos, tribe_cache, preds, embeddings, features)
 ```
 
+## Getting the data on a fresh clone
+
+`data/` is **gitignored**: a clone has no videos, no label CSV and no caches. What is committed is the *recipe* plus
+`results/manifest.csv`, the exact 200 video ids used. On any new machine:
+
+```bash
+.venv/bin/python scripts/01_build_subset.py --from-manifest results/manifest.csv
+```
+This downloads `train_data.csv` (31 MB, Google Drive) and then exactly those 200 clips (~600 MB) by their CDN links,
+and rewrites `data/manifest.parquet`. If some links have died since 2026-11-01 the script says which; the experiment
+then runs on the survivors (report the count). Alternatively copy `data/videos/` + `data/manifest.parquet` from a
+machine that has them (rsync/scp); the ids are the same either way.
+
+Running the script *without* `--from-manifest` makes a fresh seeded selection, which is only identical if the same
+links are still alive. Use that only when deliberately re-sampling or scaling N.
+
+Other files that are re-created automatically: Yeo-7 atlas labels (`data/tribe_cache/atlas`, from GitHub),
+TRIBE weights and HF models (`data/tribe_cache`, several GB on the GPU machine). The expensive outputs
+(`data/preds`, `data/embeddings`, ≈1 GB for 200 clips) are produced only by step 02 on the GPU; copy them to
+wherever steps 03–05 run.
+
 ## How to run
 
 ### Local (CPU, macOS ok): subset, features, experiments, report
@@ -59,7 +80,7 @@ data/                          gitignored caches (videos, tribe_cache, preds, em
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv venv -p 3.11 && uv pip install -e ".[dev]"
 .venv/bin/python -m pytest -q
-.venv/bin/python scripts/01_build_subset.py             # downloads train_data.csv rows by CDN link -> data/manifest.parquet
+.venv/bin/python scripts/01_build_subset.py --from-manifest results/manifest.csv   # exact committed subset
 # ... run step 2 on the GPU machine, copy data/preds + data/embeddings back (≈1 GB) ...
 .venv/bin/python scripts/03_build_features.py
 .venv/bin/python scripts/04_run_experiments.py           # --quick for a 2x3 dev run
@@ -76,7 +97,7 @@ CPU-only dry run of steps 3–5 without a GPU (fabricated TRIBE outputs, pipelin
 git clone <this repo> && cd brain-model
 bash scripts/setup_gpu_env.sh
 source .venv/bin/activate && huggingface-cli login     # needs approved access to meta-llama/Llama-3.2-3B
-python scripts/01_build_subset.py                        # or rsync data/videos + data/manifest.parquet from the Mac
+python scripts/01_build_subset.py --from-manifest results/manifest.csv   # or rsync data/videos + manifest from the Mac
 python scripts/00_smoke_test.py --video data/videos/<id>.mp4   # shapes, timing, embedding-cache check
 #   add --no-text while Llama access is pending; add -u data.video_feature.image.batch_size=2 on OOM
 python scripts/02_extract_tribe.py --limit 5             # measure minutes/clip, then

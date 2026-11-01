@@ -3,6 +3,7 @@ seed: 20261101
 
 data:
   labels_csv: data/raw/train_data.csv
+  labels_gdrive_id: 1Mv5Esq5gGuxRTayabRUb5NmHwEN3JdbD   # auto-downloaded if the CSV is missing
   videos_dir: data/videos
   manifest: data/manifest.parquet
   features_dir: data/features

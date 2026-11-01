@@ -44,6 +44,13 @@ Not done (needs the GPU machine):
   to run the same HF models directly (model ids are in the README) and write the same `.npz` format.
 - `scripts/02_extract_tribe.py` over the 200 clips, then `03 → 04 → 05` for the real `results/summary.md`.
 
+## Fresh clone has no data
+
+`data/` is gitignored. Rebuild the exact subset with
+`python scripts/01_build_subset.py --from-manifest results/manifest.csv` (fetches the label CSV and the 200
+clips, ~600 MB). Running it without `--from-manifest` re-samples and may pick different videos as links die.
+TRIBE outputs (`data/preds`, `data/embeddings`) only come from step 02 on the GPU; copy them between machines.
+
 ## How to work here
 
 - Everything is driven by `configs/default.yaml`. Do not hard-code paths, seeds or sizes in scripts.

@@ -1,4 +1,10 @@
-"""Step 1: pick, download, verify, dedupe and balance the SnapUGC subset -> data/manifest.parquet"""
+"""Step 1: pick, download, verify, dedupe and balance the SnapUGC subset -> data/manifest.parquet
+
+Two modes:
+  python scripts/01_build_subset.py                                  # fresh seeded selection (link liveness changes over time!)
+  python scripts/01_build_subset.py --from-manifest results/manifest.csv   # rebuild the exact committed subset on a new machine
+The label CSV (data/raw/train_data.csv, 31 MB) is fetched from Google Drive automatically if missing.
+"""
 from __future__ import annotations
 
 import argparse
@@ -7,7 +13,7 @@ import logging
 import pandas as pd
 
 from brainengage.config import load_config, resolve
-from brainengage.data.select_subset import balance, dedupe, download_until, load_labels, probe_all
+from brainengage.data.select_subset import balance, dedupe, download_ids, download_until, ensure_labels_csv, load_labels, probe_all
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
@@ -17,6 +23,7 @@ def main():
     ap.add_argument("--config", default=None)
     ap.add_argument("--n-target", type=int, default=None)
     ap.add_argument("--n-candidates", type=int, default=None)
+    ap.add_argument("--from-manifest", default=None, help="CSV with an 'id' column: download exactly these ids")
     args = ap.parse_args()
     cfg = load_config(args.config)
     d = cfg["data"]
@@ -24,9 +31,25 @@ def main():
     n_cand = args.n_candidates or d["n_candidates_min"]
     videos_dir = resolve(d["videos_dir"])
 
-    labels = load_labels(resolve(d["labels_csv"]))
+    labels = load_labels(ensure_labels_csv(resolve(d["labels_csv"]), d.get("labels_gdrive_id")))
     if d.get("drop_ecr_zero"):
         labels = labels[labels.ecr > 0]
+    if args.from_manifest:
+        wanted = pd.read_csv(resolve(args.from_manifest), dtype={"id": str})
+        log_df = download_ids(labels[labels.id.isin(wanted.id)], videos_dir, workers=d["download_workers"], timeout=d["download_timeout_s"])
+        log_df.to_csv(videos_dir.parent / "download_log.csv", index=False)
+        bad = log_df[~log_df.status.isin(["ok", "cached"])]
+        if len(bad):
+            logging.warning("%d/%d manifest videos could not be downloaded (links died): %s", len(bad), len(wanted), bad.id.tolist()[:10])
+        probed = probe_all(sorted(set(wanted.id) - set(bad.id)), videos_dir, d["min_duration"], d["max_duration"])
+        probed = probed.merge(labels[["id", "title", "description", "ecr"]], on="id", how="left")
+        man = probed[probed.probe_ok].copy()
+        man["duration_bin"] = pd.cut(man["duration_s"], bins=d["duration_bins"], right=False, labels=False).astype(int)
+        man = man.sort_values("id").reset_index(drop=True)
+        cols = ["id", "path", "duration_s", "duration_bin", "ecr", "title", "description", "fps", "width", "height", "has_audio"]
+        man[cols].to_parquet(resolve(d["manifest"]), index=False)
+        print(f"rebuilt {resolve(d['manifest'])} with {len(man)}/{len(wanted)} rows from {args.from_manifest}")
+        return
     log_df = download_until(labels, videos_dir, n_live=n_cand, seed=cfg["seed"],
                             workers=d["download_workers"], timeout=d["download_timeout_s"])
     log_df.to_csv(videos_dir.parent / "download_log.csv", index=False)
