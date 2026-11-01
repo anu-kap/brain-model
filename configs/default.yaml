@@ -1,0 +1,44 @@
+# Single source of truth for the POC. Every script reads this file.
+seed: 20261101
+
+data:
+  labels_csv: data/raw/train_data.csv
+  videos_dir: data/videos
+  manifest: data/manifest.parquet
+  features_dir: data/features
+  n_target: 200            # videos to keep after dedupe/balance
+  n_candidates_min: 800    # keep downloading until at least this many live clips (long clips are rare: ~3% of live clips are 40-60 s)
+  duration_bins: [5, 20, 40, 61]   # edges in seconds -> 3 bins
+  min_duration: 5.0
+  max_duration: 60.5
+  download_workers: 8
+  download_timeout_s: 60
+  drop_ecr_zero: false     # 544/106k rows have ECR exactly 0; keep them (they are real)
+
+tribe:
+  repo_id: facebook/tribev2
+  cache_folder: data/tribe_cache
+  preds_dir: data/preds
+  embeddings_dir: data/embeddings
+  hemodynamic_offset_s: 5     # preds[t] <-> stimulus time t-5
+  n_vertices: 20484
+  text_stream: true           # false -> audio_only events (no WhisperX / Llama); smoke-test fallback
+
+features:
+  early_window_s: 3           # "hook" window, stimulus time [0, 3)
+  label_window_s: 5           # ECR = P(watch > 5 s): secondary analysis restricts to [0, 5)
+  stats: [mean, peak, time_to_peak, slope, var, early]
+  parcellations:
+    primary: yeo7             # 7 networks + global field power
+    exploratory: hcp_mmp      # 180 bilateral parcels via tribev2.utils (GPU env only)
+  baseline_pca_dims: [8, 32]  # per modality; "matched" (~C dims) and "wide"
+  random_readout_dim: 8       # pseudo-parcels for the random-readout control
+
+modeling:
+  outer_folds: 5
+  outer_repeats: 10
+  learning_curve_n: [50, 100, all]
+  draws_per_n: 10
+  ridge_alphas_log10: [-2, 4, 13]   # np.logspace(start, stop, num)
+  bootstrap_n: 2000
+  hgb_at_full_n: true

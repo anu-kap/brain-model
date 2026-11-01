@@ -1,0 +1,58 @@
+# Dev-only: same protocol, but inputs are fabricated by scripts/dev_make_synthetic.py
+seed: 20261101
+data:
+  labels_csv: data/raw/train_data.csv
+  videos_dir: data/videos
+  manifest: data/synthetic/manifest.parquet
+  features_dir: data/features_synthetic
+  n_target: 200
+  n_candidates_min: 800
+  duration_bins:
+  - 5
+  - 20
+  - 40
+  - 61
+  min_duration: 5.0
+  max_duration: 60.5
+  download_workers: 8
+  download_timeout_s: 60
+  drop_ecr_zero: false
+tribe:
+  repo_id: facebook/tribev2
+  cache_folder: data/tribe_cache
+  preds_dir: data/synthetic/preds
+  embeddings_dir: data/synthetic/embeddings
+  hemodynamic_offset_s: 5
+  n_vertices: 20484
+  text_stream: true
+features:
+  early_window_s: 3
+  label_window_s: 5
+  stats:
+  - mean
+  - peak
+  - time_to_peak
+  - slope
+  - var
+  - early
+  parcellations:
+    primary: yeo7
+    exploratory: hcp_mmp
+  baseline_pca_dims:
+  - 8
+  - 32
+  random_readout_dim: 8
+modeling:
+  outer_folds: 5
+  outer_repeats: 10
+  learning_curve_n:
+  - 50
+  - 100
+  - all
+  draws_per_n: 10
+  ridge_alphas_log10:
+  - -2
+  - 4
+  - 13
+  bootstrap_n: 2000
+  hgb_at_full_n: true
