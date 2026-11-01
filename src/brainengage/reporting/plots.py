@@ -48,6 +48,7 @@ def learning_curve(pooled: pd.DataFrame, best_a: str, best_b: str, n_train_by_n:
     ax.set_xscale("log")
     ax.set_xticks(sorted(set(n_train_by_n.values())))
     ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    ax.get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
     ax.set_xlabel("training videos per fold")
     ax.set_ylabel("pooled out-of-fold Spearman (ECR)")
     ax.axhline(0, color="#c3c2b7", lw=0.8)
