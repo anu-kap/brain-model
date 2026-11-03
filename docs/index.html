@@ -50,7 +50,7 @@ nav ul{display:flex;gap:28px;list-style:none}
 nav li a{position:relative;padding-bottom:2px}
 nav li a::after{content:"";position:absolute;left:0;bottom:-2px;width:100%;height:1px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .4s cubic-bezier(.76,0,.24,1)}
 nav li a:hover::after{transform:scaleX(1);transform-origin:left}
-@media (max-width:640px){nav ul{gap:16px}nav ul li:nth-child(2){display:none}}
+@media (max-width:640px){nav ul{gap:16px}nav ul li:nth-child(2),nav ul li:nth-child(3){display:none}}
 
 section{padding:0 var(--gutter)}
 .wrap{max-width:1440px;margin:0 auto}
@@ -95,6 +95,36 @@ h2 em{font-style:italic;color:var(--accent)}
 .steps p{color:var(--mute);max-width:48ch}
 @media (max-width:760px){.steps li{grid-template-columns:48px 1fr}.steps p{grid-column:2}}
 
+/* pipeline diagram */
+.diagram{margin-top:64px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:40px 0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.diagram svg{display:block;width:100%;min-width:960px;height:auto}
+.diagram .col{font-family:var(--sans);font-weight:400;font-size:11px;letter-spacing:.12em;fill:var(--mute)}
+.diagram .box{fill:none;stroke:var(--line);stroke-width:1}
+.diagram .box.brain{stroke:var(--accent)}
+.diagram .box.out{fill:var(--fg);stroke:var(--fg)}
+.diagram .t{font-family:var(--serif);font-size:19px;fill:var(--fg);letter-spacing:-.01em}
+.diagram .t.inv{fill:var(--bg)}
+.diagram .s{font-family:var(--sans);font-weight:300;font-size:12px;fill:var(--mute)}
+.diagram .s.inv{fill:var(--bg);opacity:.75}
+.diagram .e{fill:none;stroke:var(--mute);stroke-width:1;opacity:.7}
+.diagram .e.brain{stroke:var(--accent);opacity:1}
+.diagram .e.loop{stroke:var(--accent);stroke-dasharray:5 5;opacity:1}
+.diagram .curve{fill:none;stroke:var(--accent);stroke-width:1.5}
+.diagram .lbl{font-family:var(--sans);font-weight:400;font-size:11px;letter-spacing:.08em;fill:var(--accent)}
+.diagram .ah{fill:var(--mute)}.diagram .ah.brain,.diagram .ah.loop{fill:var(--accent)}
+.scroll-hint{display:none;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);font-weight:400;margin-top:14px}
+@media (max-width:1000px){.scroll-hint{display:block}}
+.caption{color:var(--mute);max-width:70ch;margin-top:20px;font-size:15px}
+
+/* what you get */
+.band{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:72px;border-top:1px solid var(--line)}
+.band>div{padding-top:28px;border-top:1px solid var(--fg);transition:border-color .4s}
+.band>div:hover{border-color:var(--accent)}
+.band .n{font-size:12px;letter-spacing:.1em;color:var(--mute);font-weight:400;margin-bottom:28px;font-variant-numeric:tabular-nums}
+.band h3{font-family:var(--serif);font-weight:400;font-size:clamp(28px,2.8vw,42px);letter-spacing:-.02em;line-height:1.05;max-width:12ch}
+.band p{color:var(--mute);margin-top:16px;max-width:38ch}
+@media (max-width:900px){.band{grid-template-columns:1fr;gap:0}.band>div{padding-bottom:36px}}
+
 /* big statement */
 .statement{text-align:center}
 .statement p{font-family:var(--serif);font-size:clamp(30px,4.6vw,76px);line-height:1.05;letter-spacing:-.025em;max-width:22ch;margin:0 auto;text-wrap:balance}
@@ -134,6 +164,7 @@ footer{padding:28px var(--gutter) 36px;border-top:1px solid var(--line);display:
   <ul>
     <li><a href="#what">What</a></li>
     <li><a href="#how">How</a></li>
+    <li><a href="#results">Results</a></li>
     <li><a href="#team">Team</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
@@ -168,12 +199,101 @@ footer{padding:28px var(--gutter) 36px;border-top:1px solid var(--line);display:
 <section class="sec" id="how">
   <div class="wrap">
     <div class="label">How it works</div>
-    <h2>Three steps from upload to decision.</h2>
+    <h2>From ad variants to <em>viewer retention</em>.</h2>
+    <div class="diagram r">
+      <svg viewBox="0 0 1200 420" role="img" aria-label="Ad variants are analysed for visuals, sound and speech. A brain response model estimates how viewers are likely to respond second by second. An engagement model trained on real viewer retention turns that into a retention score, a drop-off curve and an explanation. Live ad performance feeds back to improve the engagement model.">
+        <defs>
+          <marker id="h-n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="ah"/></marker>
+          <marker id="h-brain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="ah brain"/></marker>
+          <marker id="h-loop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="ah loop"/></marker>
+        </defs>
+
+        <text class="col" x="95" y="40" text-anchor="middle">YOUR ADS</text>
+        <text class="col" x="310" y="40" text-anchor="middle">UNDERSTANDING</text>
+        <text class="col" x="550" y="40" text-anchor="middle">BRAIN RESPONSE</text>
+        <text class="col" x="795" y="40" text-anchor="middle">ENGAGEMENT</text>
+        <text class="col" x="1060" y="40" text-anchor="middle">RESULTS</text>
+
+        <rect class="box" x="32" y="138" width="150" height="110" rx="2" opacity=".35"/>
+        <rect class="box" x="26" y="144" width="150" height="110" rx="2" opacity=".6"/>
+        <rect class="box" x="20" y="150" width="150" height="110" rx="2"/>
+        <text class="t" x="95" y="198" text-anchor="middle">Ad variants</text>
+        <text class="s" x="95" y="218" text-anchor="middle">short-form video,</text>
+        <text class="s" x="95" y="234" text-anchor="middle">before launch</text>
+
+        <path class="e" d="M170 205 C195 205 195 102 218 102" marker-end="url(#h-n)"/>
+        <path class="e" d="M170 205 C195 205 195 192 218 192" marker-end="url(#h-n)"/>
+        <path class="e" d="M170 205 C195 205 195 282 218 282" marker-end="url(#h-n)"/>
+
+        <rect class="box" x="220" y="70" width="180" height="64" rx="2"/>
+        <text class="t" x="236" y="99">Visuals</text>
+        <text class="s" x="236" y="118">what is on screen, and when</text>
+        <rect class="box" x="220" y="160" width="180" height="64" rx="2"/>
+        <text class="t" x="236" y="189">Sound</text>
+        <text class="s" x="236" y="208">music, voice and pacing</text>
+        <rect class="box" x="220" y="250" width="180" height="64" rx="2"/>
+        <text class="t" x="236" y="279">Speech</text>
+        <text class="s" x="236" y="298">what is being said</text>
+
+        <line class="e" x1="400" y1="102" x2="448" y2="102" marker-end="url(#h-n)"/>
+        <line class="e" x1="400" y1="192" x2="448" y2="192" marker-end="url(#h-n)"/>
+        <line class="e" x1="400" y1="282" x2="448" y2="282" marker-end="url(#h-n)"/>
+
+        <rect class="box brain" x="450" y="70" width="200" height="244" rx="2"/>
+        <text class="t" x="466" y="103">Brain response model</text>
+        <text class="s" x="466" y="127">Estimates how a viewer's</text>
+        <text class="s" x="466" y="144">brain is likely to respond,</text>
+        <text class="s" x="466" y="161">second by second</text>
+        <path class="curve" d="M470 210 C490 196 505 232 525 214 S560 190 580 206 S615 228 630 200" opacity=".9"/>
+        <path class="curve" d="M470 250 C492 262 508 238 528 246 S562 266 582 248 S614 236 630 252" opacity=".55"/>
+        <path class="curve" d="M470 286 C490 280 512 296 530 288 S566 276 586 292 S616 296 630 284" opacity=".3"/>
+
+        <line class="e brain" x1="650" y1="192" x2="698" y2="192" marker-end="url(#h-brain)"/>
+
+        <rect class="box" x="700" y="120" width="190" height="144" rx="2"/>
+        <text class="t" x="716" y="153">Engagement model</text>
+        <text class="s" x="716" y="177">Trained on how real</text>
+        <text class="s" x="716" y="194">viewers watched real</text>
+        <text class="s" x="716" y="211">short-form videos</text>
+
+        <path class="e" d="M890 192 C915 192 915 102 938 102" marker-end="url(#h-n)"/>
+        <path class="e" d="M890 192 C915 192 915 192 938 192" marker-end="url(#h-n)"/>
+        <path class="e" d="M890 192 C915 192 915 282 938 282" marker-end="url(#h-n)"/>
+
+        <rect class="box out" x="940" y="70" width="240" height="64" rx="2"/>
+        <text class="t inv" x="956" y="99">Retention score</text>
+        <text class="s inv" x="956" y="118">which variant keeps people watching</text>
+        <rect class="box" x="940" y="160" width="240" height="64" rx="2"/>
+        <text class="t" x="956" y="189">Drop-off curve</text>
+        <text class="s" x="956" y="208">where viewers are likely to leave</text>
+        <path class="curve" d="M1124 176 C1134 178 1138 196 1148 200 S1162 205 1170 206"/>
+        <rect class="box" x="940" y="250" width="240" height="64" rx="2"/>
+        <text class="t" x="956" y="279">Why</text>
+        <text class="s" x="956" y="298">plain-language reasons to fix or ship</text>
+
+        <path class="e loop" d="M1060 314 V372 H795 V266" marker-end="url(#h-loop)"/>
+        <text class="lbl" x="928" y="396" text-anchor="middle">LIVE AD PERFORMANCE FEEDS BACK AND SHARPENS THE MODEL</text>
+      </svg>
+    </div>
+    <div class="scroll-hint">Scroll sideways to follow the pipeline &rarr;</div>
+    <p class="caption r">Each ad is broken down into what viewers see, hear and are told. We estimate how the brain is likely to respond to it, then use an engagement model trained on real viewing data to predict retention. Once ads go live, their results feed back in, so predictions keep improving.</p>
     <ol class="steps">
-      <li class="r"><h3>Upload your variants</h3><p>Drop in cuts, hooks, thumbnails or full edits. Anything from five seconds to a minute, in any format your editor exports.</p></li>
-      <li class="r"><h3>We simulate the viewer</h3><p>A brain model trained on thousands of hours of recorded neural activity predicts how visual, auditory and language cortex respond to each frame.</p></li>
-      <li class="r"><h3>You ship the winner</h3><p>Variants are ranked by predicted engagement, with a trace that shows exactly where attention peaks and where it falls away.</p></li>
+      <li class="r"><h3>Upload your variants</h3><p>Drop in cuts, hooks or full edits, anything from five seconds to a minute, before a dollar goes to distribution.</p></li>
+      <li class="r"><h3>We model the viewer</h3><p>Each ad is broken into visuals, sound and speech. A brain response model estimates how a viewer's brain reacts to each second, and an engagement model trained on real viewing data turns that into retention.</p></li>
+      <li class="r"><h3>You ship the winner</h3><p>Variants are ranked by predicted retention, with a drop-off curve and plain-language reasons for where attention holds and where it falls away.</p></li>
     </ol>
+  </div>
+</section>
+
+<section class="sec" id="results">
+  <div class="wrap">
+    <div class="label">What you get</div>
+    <h2>Three answers, <em>before</em> launch.</h2>
+    <div class="band">
+      <div class="r"><div class="n">01 &nbsp;RETENTION SCORE</div><h3>Pick the winner before you spend</h3><p>Compare every variant side by side and put your budget behind the one most likely to hold attention.</p></div>
+      <div class="r"><div class="n">02 &nbsp;DROP-OFF CURVE</div><h3>See where viewers drop off</h3><p>A second-by-second curve, with extra detail on the first few seconds, where most short-form ads lose people.</p></div>
+      <div class="r"><div class="n">03 &nbsp;WHY</div><h3>Know what to change</h3><p>Clear reasons tied to moments in the ad, such as a hook that lands too late or speech that starts after viewers have moved on.</p></div>
+    </div>
   </div>
 </section>
 
