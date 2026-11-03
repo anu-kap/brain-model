@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BrainGage</title>
+<meta name="description" content="BrainGage predicts how audiences will respond to short-form video before it ships, using models of the human brain.">
+<meta property="og:title" content="BrainGage">
+<meta property="og:description" content="Know how your video lands before it ships.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230a0a0a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f4f3ef;--fg:#0b0b0b;--mute:#6f6e69;--line:rgba(11,11,11,.12);--accent:#ff4d1c;
+  --sans:"Inter Tight",system-ui,-apple-system,Helvetica,Arial,sans-serif;
+  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --gutter:clamp(16px,4vw,56px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#0b0b0b;--fg:#f4f3ef;--mute:#8d8c86;--line:rgba(244,243,239,.14)}
+}
+:root[data-theme="dark"]{--bg:#0b0b0b;--fg:#f4f3ef;--mute:#8d8c86;--line:rgba(244,243,239,.14)}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden;-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);color:var(--fg);font-family:var(--sans);font-weight:300;
+  font-size:clamp(16px,1.1vw,19px);line-height:1.5;letter-spacing:-.005em;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body::before{ /* film grain */
+  content:"";position:fixed;inset:-50%;pointer-events:none;z-index:50;opacity:.06;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 1.2s steps(4) infinite;
+}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-2%,3%)}50%{transform:translate(3%,-1%)}75%{transform:translate(-1%,-3%)}100%{transform:translate(2%,2%)}}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--accent);color:#fff}
+
+/* nav */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;justify-content:space-between;
+  padding:22px var(--gutter);mix-blend-mode:difference;color:#fff;font-size:13px;letter-spacing:.06em;text-transform:uppercase;font-weight:400;
+}
+nav .brand{display:flex;align-items:center;gap:10px}
+nav .dot{width:10px;height:10px;border-radius:50%;background:currentColor}
+nav ul{display:flex;gap:28px;list-style:none}
+nav li a{position:relative;padding-bottom:2px}
+nav li a::after{content:"";position:absolute;left:0;bottom:-2px;width:100%;height:1px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .4s cubic-bezier(.76,0,.24,1)}
+nav li a:hover::after{transform:scaleX(1);transform-origin:left}
+@media (max-width:640px){nav ul{gap:16px}nav ul li:nth-child(2){display:none}}
+
+section{padding:0 var(--gutter)}
+.wrap{max-width:1440px;margin:0 auto}
+
+/* hero */
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:clamp(32px,6vh,72px);position:relative}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.hero .wrap{position:relative;z-index:1}
+h1{
+  font-family:var(--serif);font-weight:400;letter-spacing:-.03em;line-height:.92;
+  font-size:clamp(44px,11vw,176px);
+}
+h1 em{font-style:italic;color:var(--accent)}
+h1 .line{display:block;overflow:hidden;padding:.08em .06em;margin:-.08em -.06em}
+h1 .line span{display:block;transform:translateY(110%);animation:rise 1.2s cubic-bezier(.16,1,.3,1) forwards}
+h1 .line:nth-child(2) span{animation-delay:.1s}
+h1 .line:nth-child(3) span{animation-delay:.2s}
+@keyframes rise{to{transform:translateY(0)}}
+.hero-foot{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:clamp(28px,5vh,56px);padding-top:24px;border-top:1px solid var(--line);align-items:end;opacity:0;animation:fade 1s .7s forwards}
+.hero-foot p{max-width:46ch;font-size:clamp(17px,1.4vw,22px);line-height:1.35}
+.hero-foot .meta{text-align:right;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);font-weight:400}
+@keyframes fade{to{opacity:1}}
+@media (max-width:760px){.hero-foot{grid-template-columns:1fr}.hero-foot .meta{text-align:left}}
+
+/* generic section */
+.sec{padding-top:clamp(96px,16vh,200px);padding-bottom:clamp(96px,16vh,200px);border-top:1px solid var(--line)}
+.label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);font-weight:400;margin-bottom:40px;display:flex;gap:14px;align-items:center}
+.label::before{content:"";width:28px;height:1px;background:var(--mute)}
+h2{font-family:var(--serif);font-weight:400;letter-spacing:-.025em;line-height:1.02;font-size:clamp(38px,5.4vw,88px);max-width:18ch}
+h2 em{font-style:italic;color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:24px}
+.c6{grid-column:span 6}.c5{grid-column:span 5}.c7{grid-column:span 7}.c4{grid-column:span 4}.c8{grid-column:span 8}.off{grid-column:7/13}
+@media (max-width:900px){.c6,.c5,.c7,.c4,.c8,.off{grid-column:1/-1}}
+.lede{font-size:clamp(19px,1.7vw,27px);line-height:1.35;max-width:38ch;text-wrap:pretty}
+.body{color:var(--mute);max-width:52ch;margin-top:20px}
+
+/* steps */
+.steps{list-style:none;counter-reset:s;margin-top:72px;border-top:1px solid var(--line)}
+.steps li{counter-increment:s;display:grid;grid-template-columns:80px 1fr 1.4fr;gap:24px;padding:36px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.steps li::before{content:"0" counter(s);font-size:13px;letter-spacing:.08em;color:var(--mute);font-weight:400;font-variant-numeric:tabular-nums}
+.steps h3{font-family:var(--serif);font-weight:400;font-size:clamp(26px,2.6vw,40px);letter-spacing:-.02em;line-height:1.05}
+.steps p{color:var(--mute);max-width:48ch}
+@media (max-width:760px){.steps li{grid-template-columns:48px 1fr}.steps p{grid-column:2}}
+
+/* big statement */
+.statement{text-align:center}
+.statement p{font-family:var(--serif);font-size:clamp(30px,4.6vw,76px);line-height:1.05;letter-spacing:-.025em;max-width:22ch;margin:0 auto;text-wrap:balance}
+.statement p em{color:var(--accent);font-style:italic}
+
+/* team */
+.team{list-style:none;border-top:1px solid var(--line);margin-top:8px}
+.team li{display:grid;grid-template-columns:1.2fr .6fr 1.4fr;gap:24px;padding:34px 0;border-bottom:1px solid var(--line);align-items:baseline;transition:padding-left .5s cubic-bezier(.16,1,.3,1)}
+.team li:hover{padding-left:12px}
+.team .name{font-family:var(--serif);font-size:clamp(30px,3.6vw,56px);letter-spacing:-.025em;line-height:1}
+.team .role{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:400}
+.team .bio{color:var(--mute);max-width:44ch}
+.team .bio b{color:var(--fg);font-weight:400}
+@media (max-width:760px){.team li{grid-template-columns:1fr;gap:8px}}
+
+/* contact / footer */
+.contact h2{max-width:14ch}
+.cta{display:inline-flex;align-items:center;gap:18px;margin-top:48px;font-family:var(--serif);font-size:clamp(26px,3vw,46px);letter-spacing:-.02em;border-bottom:1px solid var(--fg);padding-bottom:6px;transition:gap .4s cubic-bezier(.16,1,.3,1)}
+.cta:hover{gap:30px}
+.cta svg{width:.8em;height:.8em}
+footer{padding:28px var(--gutter) 36px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:400}
+
+/* reveal */
+.r{opacity:0;transform:translateY(28px);transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1)}
+.r.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .r{opacity:1;transform:none;transition:none}
+  h1 .line span{animation:none;transform:none}.hero-foot{animation:none;opacity:1}
+  body::before{animation:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="#top"><span class="dot"></span>BrainGage</a>
+  <ul>
+    <li><a href="#what">What</a></li>
+    <li><a href="#how">How</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero" id="top">
+  <canvas id="field" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <h1>
+      <span class="line"><span>Know how</span></span>
+      <span class="line"><span>your video <em>lands</em></span></span>
+      <span class="line"><span>before it ships.</span></span>
+    </h1>
+    <div class="hero-foot">
+      <p>BrainGage predicts audience response to short-form video from a model of the human brain, so you can rank creative before you spend a dollar on distribution.</p>
+      <div class="meta">Pre-launch creative testing<br>Est. 2026</div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="what">
+  <div class="wrap grid">
+    <div class="c5"><div class="label">What we do</div>
+      <h2>Attention is <em>measurable</em>, not mysterious.</h2></div>
+    <div class="off">
+      <p class="lede">Every second of a video produces a response in the viewer's brain. We simulate that response for your footage and read out what matters: whether people stop, whether they stay, and when they leave.</p>
+      <p class="body">The result is a score and a second-by-second trace for each variant, delivered in minutes. No panels, no surveys, no waiting for a campaign to tell you what you could have known on day one.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="how">
+  <div class="wrap">
+    <div class="label">How it works</div>
+    <h2>Three steps from upload to decision.</h2>
+    <ol class="steps">
+      <li class="r"><h3>Upload your variants</h3><p>Drop in cuts, hooks, thumbnails or full edits. Anything from five seconds to a minute, in any format your editor exports.</p></li>
+      <li class="r"><h3>We simulate the viewer</h3><p>A brain model trained on thousands of hours of recorded neural activity predicts how visual, auditory and language cortex respond to each frame.</p></li>
+      <li class="r"><h3>You ship the winner</h3><p>Variants are ranked by predicted engagement, with a trace that shows exactly where attention peaks and where it falls away.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="sec statement">
+  <div class="wrap r">
+    <p>Creative testing has always meant guessing, then paying to find out. We want it to mean <em>knowing</em>.</p>
+  </div>
+</section>
+
+<section class="sec" id="team">
+  <div class="wrap">
+    <div class="label">Founders</div>
+    <h2>A small team from the places that build hard things.</h2>
+    <ul class="team" style="margin-top:64px">
+      <li class="r">
+        <div class="name">Dhruv Dharba</div>
+        <div class="role">Chief Executive</div>
+        <div class="bio"><b>UPenn M&amp;T</b>, computer science, finance and robotics. Previously at <b>SpaceX</b>.</div>
+      </li>
+      <li class="r">
+        <div class="name">Anurag Kapila</div>
+        <div class="role">Chief Technology</div>
+        <div class="bio"><b>Carnegie Mellon</b>, computer science and mathematics. Previously at <b>Empirik</b>, backed by Sequoia.</div>
+      </li>
+      <li class="r">
+        <div class="name">Shiv</div>
+        <div class="role">Co-founder</div>
+        <div class="bio"><b>University of Washington</b>, computer science and mathematics.</div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec contact" id="contact">
+  <div class="wrap grid">
+    <div class="c7 r">
+      <div class="label">Contact</div>
+      <h2>Testing creative at scale? <em>Talk to us.</em></h2>
+      <a class="cta" href="mailto:hello@braingage.ai">hello@braingage.ai
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>&copy; 2026 BrainGage</span>
+  <span>Built in the US</span>
+</footer>
+
+<script>
+// scroll reveal
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll('.r').forEach(el=>io.observe(el));
+
+// hero: slow drifting field of points, like a neural population settling
+(()=>{
+  const c=document.getElementById('field');if(!c)return;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ctx=c.getContext('2d');let w,h,pts=[],t=0,raf;
+  const dark=()=>document.documentElement.dataset.theme==='dark'||(document.documentElement.dataset.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);
+  function size(){const d=Math.min(devicePixelRatio||1,2);w=c.clientWidth;h=c.clientHeight;c.width=w*d;c.height=h*d;ctx.setTransform(d,0,0,d,0,0);
+    const n=Math.floor((w*h)/9000);pts=Array.from({length:n},()=>({x:Math.random()*w,y:Math.random()*h,p:Math.random()*6.28,s:.4+Math.random()*.6}))}
+  function draw(){
+    ctx.clearRect(0,0,w,h);const col=dark()?'244,243,239':'11,11,11';
+    for(const p of pts){
+      const a=.15+.35*(.5+.5*Math.sin(t*.8*p.s+p.p));
+      const x=p.x+Math.sin(t*.3+p.p)*8,y=p.y+Math.cos(t*.25+p.p*1.3)*8;
+      ctx.fillStyle=`rgba(${col},${a})`;ctx.beginPath();ctx.arc(x,y,1.1,0,6.28);ctx.fill();
+    }
+    t+=.016;if(!reduce)raf=requestAnimationFrame(draw);
+  }
+  size();draw();addEventListener('resize',()=>{size();if(reduce)draw()});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelAnimationFrame(raf);else if(!reduce)draw()});
+})();
+</script>
+</body>
+</html>

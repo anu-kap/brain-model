@@ -133,3 +133,9 @@ Real results will appear in `results/summary.md` and `results/learning_curve.png
 extractions. Anything under `results/_synthetic/` is a pipeline test, not a finding.
 
 For agents: read `CLAUDE.md` first (purpose, decisions, gotchas, next steps).
+
+## Company site (`docs/`)
+
+`docs/index.html` is the BrainGage landing page, a single static file with no build step.
+It deploys automatically: `.github/workflows/pages.yml` publishes `docs/` to GitHub Pages on every push to
+`main` that touches `docs/` (Pages source is set to "GitHub Actions").
